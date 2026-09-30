@@ -11,6 +11,7 @@ export type Payment = {
   bank_account_id: string;
   payee: string;
   invoice_ref: string | null;
+  voucher_number: string | null;
   amount: number;
   payment_date: string;
   cleared: boolean;

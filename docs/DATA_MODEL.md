@@ -20,6 +20,7 @@
 | bank_account_id | uuid | FK → bank_accounts.id |
 | payee | text | recipient name |
 | invoice_ref | text | invoice/reference number |
+| voucher_number | text | nullable internal payment voucher number |
 | amount | numeric(14,2) | positive, outflow |
 | payment_date | date | scheduled or actual |
 | cleared | boolean | default false — settled in Maybank2e |

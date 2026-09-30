@@ -8,7 +8,7 @@ A finance team of 4 manually tracks bank balances to ensure sufficient funds bef
 
 ## Core objects
 - **Bank account** — name, account number, opening balance.
-- **Payment** — outflow: payee, invoice ref, amount, date, cleared checkbox (settled in Maybank2e).
+- **Payment** — outflow: payee, invoice ref, payment voucher number, amount, date, cleared checkbox (settled in Maybank2e).
 - **Receipt** — inflow: source, reference, amount, date, cleared checkbox.
 - **Available balance** — derived: opening balance + cleared receipts − payments (all, since committed).
 

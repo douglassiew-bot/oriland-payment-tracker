@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Payment } from "@/lib/types";
 
-const paymentFields = "id,bank_account_id,payee,invoice_ref,amount,payment_date,cleared,cleared_date,created_at,bank_accounts(name)";
+const paymentFields = "id,bank_account_id,payee,invoice_ref,voucher_number,amount,payment_date,cleared,cleared_date,created_at,bank_accounts(name)";
 
 function normalize(row: Record<string, unknown>): Payment {
   return { ...row, amount: Number(row.amount) } as Payment;
@@ -23,7 +23,7 @@ export async function getPayment(id: string): Promise<Payment | null> {
   return data ? normalize(data as unknown as Record<string, unknown>) : null;
 }
 
-export type PaymentInput = Pick<Payment, "bank_account_id" | "payee" | "invoice_ref" | "amount" | "payment_date" | "cleared" | "cleared_date">;
+export type PaymentInput = Pick<Payment, "bank_account_id" | "payee" | "invoice_ref" | "voucher_number" | "amount" | "payment_date" | "cleared" | "cleared_date">;
 
 export async function insertPayment(input: PaymentInput) {
   const supabase = await createClient();

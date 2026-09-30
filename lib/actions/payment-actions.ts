@@ -11,6 +11,7 @@ function readPayment(formData: FormData) {
     bank_account_id: readRequired(formData, "bank_account_id"),
     payee: readRequired(formData, "payee"),
     invoice_ref: String(formData.get("invoice_ref") ?? "").trim() || null,
+    voucher_number: String(formData.get("voucher_number") ?? "").trim() || null,
     amount: readAmount(formData, "amount"),
     payment_date: readRequired(formData, "payment_date"),
     cleared,
