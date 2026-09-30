@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { goWithMessage, readAmount, readRequired } from "@/lib/actions/helpers";
+import { actionError, goWithMessage, readAmount, readRequired } from "@/lib/actions/helpers";
 import { insertReceipt, removeReceipt, setReceiptCleared, updateReceipt } from "@/lib/data/receipts";
 
 function readReceipt(formData: FormData) {
@@ -18,13 +18,21 @@ function readReceipt(formData: FormData) {
 }
 
 export async function createReceiptAction(formData: FormData) {
-  await insertReceipt(readReceipt(formData));
+  try {
+    await insertReceipt(readReceipt(formData));
+  } catch (error) {
+    goWithMessage("/receipts/new", actionError(error, "The receipt could not be saved. Check the connection and try again."), "error");
+  }
   revalidatePath("/", "layout");
   goWithMessage("/receipts", "Receipt created and available balance recalculated.");
 }
 
 export async function updateReceiptAction(id: string, formData: FormData) {
-  await updateReceipt(id, readReceipt(formData));
+  try {
+    await updateReceipt(id, readReceipt(formData));
+  } catch (error) {
+    goWithMessage(`/receipts/${id}/edit`, actionError(error, "The receipt could not be updated. Check the connection and try again."), "error");
+  }
   revalidatePath("/", "layout");
   goWithMessage("/receipts", "Receipt updated.");
 }

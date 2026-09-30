@@ -12,6 +12,11 @@ export function readAmount(formData: FormData, key: string) {
   return Math.round(amount * 100) / 100;
 }
 
-export function goWithMessage(path: string, message: string, type: "success" | "error" = "success") {
+export function goWithMessage(path: string, message: string, type: "success" | "error" = "success"): never {
   redirect(`${path}?${type}=${encodeURIComponent(message)}`);
+}
+
+export function actionError(error: unknown, fallback: string) {
+  if (error instanceof Error && (error.message.includes("required") || error.message.includes("must be"))) return error.message;
+  return fallback;
 }

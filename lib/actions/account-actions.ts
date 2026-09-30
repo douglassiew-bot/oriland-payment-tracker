@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { goWithMessage, readRequired } from "@/lib/actions/helpers";
+import { actionError, goWithMessage, readRequired } from "@/lib/actions/helpers";
 import { insertAccount, removeAccount, updateAccount } from "@/lib/data/accounts";
 
 function readAccount(formData: FormData) {
@@ -11,13 +11,21 @@ function readAccount(formData: FormData) {
 }
 
 export async function createAccountAction(formData: FormData) {
-  await insertAccount(readAccount(formData));
+  try {
+    await insertAccount(readAccount(formData));
+  } catch (error) {
+    goWithMessage("/accounts/new", actionError(error, "The bank account could not be saved. Check the connection and try again."), "error");
+  }
   revalidatePath("/", "layout");
   goWithMessage("/accounts", "Bank account created.");
 }
 
 export async function updateAccountAction(id: string, formData: FormData) {
-  await updateAccount(id, readAccount(formData));
+  try {
+    await updateAccount(id, readAccount(formData));
+  } catch (error) {
+    goWithMessage(`/accounts/${id}/edit`, actionError(error, "The bank account could not be updated. Check the connection and try again."), "error");
+  }
   revalidatePath("/", "layout");
   goWithMessage("/accounts", "Bank account updated.");
 }

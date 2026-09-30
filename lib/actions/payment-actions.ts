@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { computeAvailableBalance } from "@/lib/actions/balance";
-import { goWithMessage, readAmount, readRequired } from "@/lib/actions/helpers";
-import { insertPayment, removePayment, setPaymentCleared, updatePayment } from "@/lib/data/payments";
+import { actionError, goWithMessage, readAmount, readRequired } from "@/lib/actions/helpers";
+import { insertPayment, removePayment, setPaymentCleared, updatePayment, type PaymentInput } from "@/lib/data/payments";
 
 function readPayment(formData: FormData) {
   const cleared = formData.get("cleared") === "on";
@@ -19,8 +19,13 @@ function readPayment(formData: FormData) {
 }
 
 export async function createPaymentAction(formData: FormData) {
-  const input = readPayment(formData);
-  await insertPayment(input);
+  let input: PaymentInput;
+  try {
+    input = readPayment(formData);
+    await insertPayment(input);
+  } catch (error) {
+    goWithMessage("/payments/new", actionError(error, "The payment could not be saved. Check the connection and try again."), "error");
+  }
   const balance = await computeAvailableBalance(input.bank_account_id);
   revalidatePath("/", "layout");
   if (balance < 0) {
@@ -30,7 +35,11 @@ export async function createPaymentAction(formData: FormData) {
 }
 
 export async function updatePaymentAction(id: string, formData: FormData) {
-  await updatePayment(id, readPayment(formData));
+  try {
+    await updatePayment(id, readPayment(formData));
+  } catch (error) {
+    goWithMessage(`/payments/${id}/edit`, actionError(error, "The payment could not be updated. Check the connection and try again."), "error");
+  }
   revalidatePath("/", "layout");
   goWithMessage("/payments", "Payment updated.");
 }

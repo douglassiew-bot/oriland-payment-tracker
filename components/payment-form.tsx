@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { BankAccount, Payment } from "@/lib/types";
+import { SubmitButton } from "@/components/submit-button";
 
 export function PaymentForm({ accounts, payment, action }: { accounts: BankAccount[]; payment?: Payment; action: (formData: FormData) => void | Promise<void> }) {
   return <form action={action} className="form-card">
@@ -11,6 +12,6 @@ export function PaymentForm({ accounts, payment, action }: { accounts: BankAccou
       <label className="field"><span>Payment date</span><input name="payment_date" type="date" required defaultValue={payment?.payment_date ?? new Date().toISOString().slice(0, 10)} /></label>
       <label className="check-field full"><input name="cleared" type="checkbox" defaultChecked={payment?.cleared} /><span><strong>Cleared in Maybank2e</strong><small>Mark this only when the payment has settled.</small></span></label>
     </div>
-    <div className="form-actions"><Link href="/payments" className="button secondary">Cancel</Link><button className="button primary" type="submit">{payment ? "Save changes" : "Create payment"}</button></div>
+    <div className="form-actions"><Link href="/payments" className="button secondary">Cancel</Link><SubmitButton idleLabel={payment ? "Save changes" : "Create payment"} /></div>
   </form>;
 }
