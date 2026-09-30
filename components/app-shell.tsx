@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const links = [
-  { href: "/", label: "Dashboard", icon: "⌂" },
-  { href: "/accounts", label: "Bank accounts", icon: "▣" },
-  { href: "/payments", label: "Payments", icon: "↗" },
-  { href: "/receipts", label: "Receipts", icon: "↙" },
+  { href: "/", label: "Overview", index: "01" },
+  { href: "/accounts", label: "Accounts", index: "02" },
+  { href: "/payments", label: "Payments", index: "03" },
+  { href: "/receipts", label: "Receipts", index: "04" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -16,23 +16,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="app-shell">
-      <header className="mobile-header">
-        <Link href="/" className="brand"><span className="brand-mark">O</span><span>Oriland Finance</span></Link>
-        <button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open}>☰</button>
-      </header>
-      {open && <button className="nav-scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />}
-      <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
-        <Link href="/" className="brand desktop-brand" onClick={() => setOpen(false)}><span className="brand-mark">O</span><span>Oriland Finance</span></Link>
-        <p className="nav-label">Workspace</p>
-        <nav aria-label="Primary navigation">
+      <header className="site-header">
+        <Link href="/" className="brand" onClick={() => setOpen(false)}>
+          <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
+          <span>Oriland</span>
+        </Link>
+        <button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open}>{open ? "Close" : "Menu"}</button>
+        <div className={`nav-drawer ${open ? "nav-open" : ""}`}>
+          <nav className="primary-nav" aria-label="Primary navigation">
           {links.map((link) => {
             const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
-            return <Link key={link.href} href={link.href} className={`nav-link ${active ? "active" : ""}`} onClick={() => setOpen(false)}><span className="nav-icon">{link.icon}</span>{link.label}</Link>;
+              return <Link key={link.href} href={link.href} className={`nav-link ${active ? "active" : ""}`} onClick={() => setOpen(false)}><span>{link.index}</span>{link.label}</Link>;
           })}
-        </nav>
-        <div className="sidebar-note"><span className="status-dot" />Live balance tracking<p>Shared finance workspace</p></div>
-      </aside>
+          </nav>
+          <div className="header-tools">
+            <span className="currency-chip">MYR&nbsp; (RM)</span>
+            <Link href="/payments/new" className="header-action"><span>＋</span> Record payment</Link>
+            <div className="workspace-id"><span className="status-dot" /><span>Finance desk<small>Oriland ledger</small></span></div>
+          </div>
+        </div>
+      </header>
       <main className="main-content">{children}</main>
+      <footer className="site-footer"><span>© {new Date().getFullYear()} Oriland</span><span>Quiet financial clarity / MYR ledger</span><span><span className="status-dot" />System ready</span></footer>
     </div>
   );
 }

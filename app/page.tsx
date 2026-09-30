@@ -16,7 +16,7 @@ export default async function DashboardPage() {
     ...receipts.map((item) => ({ id: item.id, date: item.receipt_date, label: item.source, reference: item.reference, amount: item.amount, kind: "Receipt" })),
   ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
   return <div className="page-wrap">
-    <PageHeader eyebrow="Finance workspace" title="Good overview, better decisions." description="Live available balances across every tracked account." actionHref="/payments/new" actionLabel="New payment" />
+    <PageHeader eyebrow="Ledger partition / Current period" title="Payments & cash position" description="Review available funds, committed payments, and cleared receipts in one working ledger." actionHref="/payments/new" actionLabel="New payment" />
     <section className="hero-summary"><div><p>Total available balance</p><strong>{formatCurrency(total)}</strong><span>Across {accounts.length} bank {accounts.length === 1 ? "account" : "accounts"}</span></div><div className="hero-actions"><Link href="/receipts/new" className="button light">＋ Record receipt</Link><Link href="/accounts" className="button ghost-light">View accounts →</Link></div></section>
     <div className="section-heading"><div><p className="eyebrow">Balances</p><h2>Bank accounts</h2></div><Link href="/accounts">Manage accounts →</Link></div>
     <section className="balance-grid">{accounts.map((account) => <BalanceCard account={account} key={account.id} />)}</section>
