@@ -30,12 +30,12 @@
 
 ## Sprint 3 — Lock Down: Auth + Per-User RLS
 **Goal:** Secure app for real team use.
-- [ ] Supabase Auth: login page, signup disabled (manual provisioning).
-- [ ] Add `user_id` population on create (server actions).
-- [ ] Replace v1 permissive RLS with team-scoped policies (`auth.uid() = user_id` OR shared team membership).
-- [ ] Redirect unauthenticated users to /login.
-- [ ] Audit log table + logging on all mutations.
-- [ ] Test with 2+ seeded users to confirm isolation.
+- [x] Supabase Auth: login page, signup disabled (manual provisioning).
+- [x] Add `user_id` population on create (server actions).
+- [x] Replace v1 permissive RLS with team-scoped policies (`auth.uid() = user_id` OR shared team membership).
+- [x] Redirect unauthenticated users to /login.
+- [x] Audit log table + logging on all mutations.
+- [x] Test with 2+ seeded users to confirm isolation.
 
 **Definition of Done:** Only logged-in team members can see/edit data. Anonymous access blocked. Mutations are audited.
 

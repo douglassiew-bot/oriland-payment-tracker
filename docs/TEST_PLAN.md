@@ -1,33 +1,52 @@
 # Test Plan
 
-## v1 success scenario (manual)
-1. Open app in browser (no login). Verify bank accounts list loads with seeded data.
-2. Confirm "Maybank Operating Account" shows available balance = opening + receipts − payments.
-3. Click Payments → New Payment. Enter: account = Maybank Operating, payee = "Test Vendor Sdn Bhd", invoice_ref = "TV-001", amount = RM 50,000, date = today.
-4. Submit. Verify red alert banner: "Insufficient balance. Do NOT approve this payment in Maybank2e. Shortfall: RM X,XXX."
-5. Verify available balance on account card updated (negative).
-6. Delete the test payment. Verify balance restored to positive.
-7. Create a payment within balance. Verify green success, no alert.
-8. Toggle cleared checkbox on a payment. Verify cleared_date is set.
+## Authentication and authorization
 
-## Empty states
-9. Delete all payments (or use a fresh account). Verify payments page shows: "No payments yet. Create your first payment."
-10. Delete all receipts. Verify receipts page shows empty state with CTA.
+1. Open `/` in a private browser session. Verify redirect to `/login?next=%2F`.
+2. Verify the login page has email/password fields and no sign-up link or create-account control.
+3. Enter invalid credentials. Verify the page shows a generic error without revealing whether the account exists.
+4. Sign in with a manually provisioned member. Verify the workspace name and signed-in email appear in the header.
+5. Sign out. Verify protected routes redirect back to `/login`.
+6. Sign in with an Auth user that has no workspace membership. Verify redirect to `/no-access` with no ledger data displayed.
 
-## Error states
-11. Disconnect network, reload page. Verify error state with retry button.
-12. Submit payment with amount = 0 or negative. Verify validation error (client + server).
+## Team isolation
 
-## Loading states
-13. Slow network (DevTools throttle). Verify skeleton placeholders render on list pages.
+7. Seed Owner A, Member A, and Owner B using `supabase/tests/0003_team_rls_isolation.sql` in a transaction.
+8. Verify Owner A can read and mutate Workspace A rows.
+9. Verify Member A can read Workspace A rows created by Owner A.
+10. Verify Owner B cannot read or mutate Workspace A rows and cannot forge its `workspace_id` or `user_id`.
+11. Verify anonymous requests return no workspace, account, payment, receipt, or audit-log rows.
+12. Roll back the transaction and verify the test identities and workspaces leave no residue.
 
-## Responsive
-14. Resize to mobile width. Verify sidebar collapses to hamburger menu.
-15. Open hamburger menu. Verify all sections accessible.
-16. Create payment on mobile. Verify form is usable.
+## Audit logging
 
-## Data integrity
-17. Create receipt, verify available balance increases by exact amount.
-18. Edit payment amount. Verify available balance reflects new amount.
-19. Delete a receipt. Verify balance decreases correctly.
-20. Refresh page. Verify all values identical (server-derived, not cached).
+13. Create, edit, and delete a bank account; verify one immutable audit row per operation with the correct actor and before/after values.
+14. Repeat for a payment and a receipt.
+15. Attempt to insert or modify `audit_logs` as an application user. Verify RLS rejects the request.
+
+## Balance and mutation integrity
+
+16. Create a payment within the available balance. Verify success and the exact derived balance.
+17. Create a payment exceeding the balance. Verify the red insufficient-balance warning and exact shortfall.
+18. Create a receipt. Verify the available balance increases by the exact amount.
+19. Toggle a payment or receipt to cleared. Verify `cleared_date` is populated and the change is audited.
+20. Delete the test records. Verify the derived balance returns to its prior value.
+21. Attempt to submit a different `user_id` or workspace in a direct request. Verify database triggers preserve the authenticated creator and current workspace.
+
+## Interface states
+
+22. Verify empty account, payment, and receipt lists show their intended calls to action.
+23. Disconnect the network and verify a recoverable error state.
+24. Throttle the network and verify list loading skeletons.
+25. At mobile width, verify the menu exposes every section and all forms remain usable.
+
+## Automated checks
+
+Run before deployment:
+
+```bash
+npx tsc --noEmit
+npm run build
+```
+
+Run `supabase/tests/0003_team_rls_isolation.sql` against a non-production database, or inside its supplied transaction so all seeded test data is rolled back.
