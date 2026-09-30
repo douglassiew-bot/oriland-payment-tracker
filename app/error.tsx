@@ -1,0 +1,2 @@
+"use client";
+export default function ErrorPage({ reset }: { error: Error; reset: () => void }) { return <div className="page-wrap"><div className="empty-state panel error-state"><span className="error-mark">!</span><h1>We couldn’t load the finance data</h1><p>Check the Supabase connection and try again. No data has been changed.</p><button className="button primary" onClick={() => reset()}>Try again</button></div></div>; }
